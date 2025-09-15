@@ -49,17 +49,19 @@ where
     }
 
     ///Replaces every value at the structs `peek` field with the consumed values of the structs `iter` field.
-    pub(crate) fn write_over_start(&mut self) {
-        self.peek = [(); BUFSIZE].map(|_| self.iter.next());
+    pub(crate) fn write_over_val(&mut self, val: usize) {
+        for i in val..(BUFSIZE - self.fizz) {
+            self.peek[i] = self.peek[self.fizz + i].take();
+        }
+        for i in (BUFSIZE - self.fizz)..BUFSIZE {
+            self.peek[i] = self.iter.next();
+        }
         self.fizz = 0;
     }
 
     ///Replaces every value after the structs `peek` field after the `val` parameter with the consumed values of the structs `iter` field.
-    pub(crate) fn write_over_val(&mut self, val: usize) {
-        for v in self.peek[val..].iter_mut() {
-            *v = self.iter.next();
-        }
-        self.fizz = val;
+    pub(crate) fn write_over_start(&mut self) {
+        self.write_over_val(0);
     }
 
     ///Change the next consumed value of the iterator.
@@ -141,5 +143,12 @@ mod tests {
         iter.next();
         iter.put_back(Some(0));
         assert_eq!(iter.peek(), &Some(0));
+    }
+
+    #[test]
+    fn peek_value_small() {
+        let mut iter: PutBackPeekMore<_, 3> = PutBackPeekMore::new(0..10);
+        iter.next();
+        assert_eq!(iter.peek_value(3), &[Some(1), Some(2), Some(3)])
     }
 }
