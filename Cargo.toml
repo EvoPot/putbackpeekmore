@@ -1,6 +1,6 @@
 [package]
 name = "putbackpeekmore"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "A no_std iterator that lets you do useful things such as peeking at more than one value and putting back a value."
 license = "MIT"
